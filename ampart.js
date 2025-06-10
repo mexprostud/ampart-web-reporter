@@ -1,11 +1,28 @@
 const humanReadableSuffixes = "BKMGTPEZY"
 
-function sizeToHumanReadable(size) {
+function sizeToHumanReadableSimplest(size) {
+    for (var i = 0; i < 9; ++i) {
+        if (size < 1024) {
+            size = size.toFixed(2)
+            return `${size}${humanReadableSuffixes[i]}`
+        }
+        size /= 1024
+    }
+    size = size.toFixed(2)
+    return `${size}BB`
+}
+
+function sizeToHumanReadableNoFractional(size) {
+    var new_size = 0.0
     for (var i = 0; i < 9; ++i) {
         if (size < 1024) {
             return `${size}${humanReadableSuffixes[i]}`
         }
-        size /= 1024
+        new_size = size / 1024
+        if (new_size % 1 != 0) {
+            return `${size}${humanReadableSuffixes[i]}`
+        }
+        size = new_size
     }
     return `${size}BB`
 }
@@ -40,16 +57,22 @@ class Partition {
         this.masks = Number(pargParts[3])
     }
 
-    fillCellsSize(size, isDTB, isSize, decimal, hex, human) {
+    fillCellsSize(size, isDTB, isSize, decimal, hex, human_simplest, human_no_fractional) {
         if (isDTB && isSize && (size == -1 || this.sizeRaw == "18446744073709551615")) {
             decimal.textContent = "auto-fill"
             hex.textContent = "auto-fill"
-            human.textContent = "auto-fill"
+            human_simplest.textContent = "auto-fill"
+            human_no_fractional.textContent = "auto-fill"
         } else {
             decimal.textContent = size
             hex.textContent = size.toString(16)
-            human.textContent = sizeToHumanReadable(size)
+            human_simplest.textContent = sizeToHumanReadableSimplest(size)
+            human_no_fractional.textContent = sizeToHumanReadableNoFractional(size)
         }
+        decimal.classList.add("tcSize")
+        hex.classList.add("tcSize")
+        human_simplest.classList.add("tcSize")
+        human_no_fractional.classList.add("tcSize")
     }
 
     fillRowName(row) {
@@ -61,15 +84,17 @@ class Partition {
     fillRowOffset(row) {
         const cellOffsetDecimal = row.insertCell()
         const cellOffsetHex = row.insertCell()
-        const cellOffsetHuman = row.insertCell()
-        this.fillCellsSize(this.offset, false, false, cellOffsetDecimal, cellOffsetHex, cellOffsetHuman)
+        const cellOffsetHumanSimplest = row.insertCell()
+        const cellOffsetHumanNoFractional = row.insertCell()
+        this.fillCellsSize(this.offset, false, false, cellOffsetDecimal, cellOffsetHex, cellOffsetHumanSimplest, cellOffsetHumanNoFractional)
     }
 
     fillRowSize(row, isDTB) {
         const cellSizeDecimal = row.insertCell()
         const cellSizeHex = row.insertCell()
-        const cellSizetHuman = row.insertCell()
-        this.fillCellsSize(this.size, isDTB, true, cellSizeDecimal, cellSizeHex, cellSizetHuman)
+        const cellOffsetHumanSimplest = row.insertCell()
+        const cellOffsetHumanNoFractional = row.insertCell()
+        this.fillCellsSize(this.size, isDTB, true, cellSizeDecimal, cellSizeHex, cellOffsetHumanSimplest, cellOffsetHumanNoFractional)
     }
 
     fillRowMasks(row) {
@@ -173,15 +198,21 @@ class Table {
         else {
             cellName.textContent = "overlap"
         }
-        for (var i = 0; i < 3; ++i) {
+        for (var i = 0; i < 4; ++i) {
             rowGap.insertCell()
         }
         const cellSizeDecimal = rowGap.insertCell()
         cellSizeDecimal.textContent = `${diff}`
+        cellSizeDecimal.classList.add("tcSize")
         const cellSizeHex = rowGap.insertCell()
         cellSizeHex.textContent = `${diff.toString(16)}`
-        const cellSizetHuman = rowGap.insertCell()
-        cellSizetHuman.textContent = `${sizeToHumanReadable(diff)}`
+        cellSizeHex.classList.add("tcSize")
+        const cellSizeHumanSimplest = rowGap.insertCell()
+        cellSizeHumanSimplest.textContent = `${sizeToHumanReadableSimplest(diff)}`
+        cellSizeHumanSimplest.classList.add("tcSize")
+        const cellSizeHumanNoFractional = rowGap.insertCell()
+        cellSizeHumanNoFractional.textContent = `${sizeToHumanReadableNoFractional(diff)}`
+        cellSizeHumanNoFractional.classList.add("tcSize")
         rowGap.insertCell()
         const cellWritable = rowGap.insertCell()
         cellWritable.textContent = "yes"

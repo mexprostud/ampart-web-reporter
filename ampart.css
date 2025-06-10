@@ -16,7 +16,27 @@ table {
 }
 
 .tcSize {
-    width: 180px;
+    text-align: right;
+}
+
+.tcSizeDecimal {
+    width: 120px;
+    text-align: right;
+}
+
+.tcSizeHexDecimal {
+    width: 100px;
+    text-align: right;
+}
+
+.tcSizeHumanSimplest {
+    width: 90px;
+    text-align: right;
+}
+
+.tcSizeHumanNoFractional {
+    width: 80px;
+    text-align: right;
 }
 
 td {
