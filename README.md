@@ -1,6 +1,6 @@
 # ampart Web Reporter
 
-Hosted on https://github.com/mexprostud/ampart-web-reporter
+Hosted on https://mexprostud.github.io/ampart-web-reporter
 
 ## Arguments
  - `dsnapshot` The output of ampart's dsnapshot mode, first line, decimal type
